@@ -4,6 +4,7 @@ import com.koreait.sssandupload.app.member.entity.Member;
 import com.koreait.sssandupload.app.member.service.MemberService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -36,13 +37,17 @@ public class MemberController {
     }
 
     @GetMapping("/profile")
-    public String showProfile(HttpSession session) {
+    public String showProfile(HttpSession session, Model model) {
         Long loginedMemberId = (Long) session.getAttribute("loginedMemberId");
         boolean isLogined = loginedMemberId != null;
 
         if(isLogined == false) {
             return "redirect:/?errorMsg=Need to Login";
         }
+
+        Member loginedMember = memberService.getMemberById(loginedMemberId);
+
+        model.addAttribute("loginedMember", loginedMember);
 
         return "member/profile";
     }
