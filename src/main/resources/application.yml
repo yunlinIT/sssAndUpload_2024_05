@@ -36,3 +36,6 @@ spring:
       ddl-auto: create
 custom:
   genFileDirPath: c:/Temp/sssApp
+logging:
+  level:
+    com.koreait.sssandupload.app: debug

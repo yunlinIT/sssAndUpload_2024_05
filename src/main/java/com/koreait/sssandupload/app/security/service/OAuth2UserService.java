@@ -3,9 +3,11 @@ package com.koreait.sssandupload.app.security.service;
 import com.koreait.sssandupload.app.member.entity.Member;
 import com.koreait.sssandupload.app.member.exception.MemberNotFoundException;
 import com.koreait.sssandupload.app.member.repository.MemberRepository;
+import com.koreait.sssandupload.app.member.service.MemberService;
 import com.koreait.sssandupload.app.security.dto.MemberContext;
 import com.koreait.sssandupload.app.security.exception.OAuthTypeMatchNotFoundException;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -23,9 +25,12 @@ import java.util.Map;
 @Service
 @Transactional(readOnly = true)
 @RequiredArgsConstructor
+@Slf4j
 public class OAuth2UserService extends DefaultOAuth2UserService {
     @Autowired
     private MemberRepository memberRepository;
+    @Autowired
+    private MemberService memberService;
 
     @Override
     @Transactional
@@ -48,23 +53,32 @@ public class OAuth2UserService extends DefaultOAuth2UserService {
         if (isNew(oauthType, oauthId)) {
             switch (oauthType) {
                 case "KAKAO" -> {
+                    log.debug("attibutes : " + attributes);
+
                     Map attributesProperties = (Map) attributes.get("properties");
                     Map attributesKakaoAcount = (Map) attributes.get("kakao_account");
+                    System.out.println(attributesProperties);
                     String nickname = (String) attributesProperties.get("nickname");
-                    String email = "%s@kakao.com".formatted(oauthId);
+                    String profile_image = (String) attributesProperties.get("profile_image");
                     String username = "KAKAO_%s".formatted(oauthId);
+                    String email = "%s@kakao.com".formatted(oauthId);
 
-//                    if ((boolean) attributesKakaoAcount.get("has_username")) {
-//                        username = (String) attributesKakaoAcount.get("username");
+//                    if ((boolean) attributesKakaoAcount.get("has_email")) {
+//                        username = (String) attributesKakaoAcount.get("email");
 //                    }
 
                     member = Member.builder()
 //                            .email(email)
+                            .nickname(nickname)
                             .username(username)
+                            .profileImg(profile_image)
                             .password("")
                             .build();
 
                     memberRepository.save(member);
+
+//                    memberService.setProfileImgByUrl(member,"https://picsum.photos/200/300");
+                    memberService.setProfileImgByUrl(member,profile_image);
                 }
             }
         } else {
