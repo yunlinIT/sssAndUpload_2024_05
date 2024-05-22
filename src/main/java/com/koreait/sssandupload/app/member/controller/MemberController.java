@@ -75,12 +75,13 @@ public class MemberController {
         return "member/profile";
     }
 
+
     @GetMapping("/profile/img/{id}")
     public ResponseEntity<Object> showProfileImg(@PathVariable Long id) throws URISyntaxException {
         URI redirectUri = new URI(memberService.getMemberById(id).getProfileImgUrl());
         HttpHeaders httpHeaders = new HttpHeaders();
         httpHeaders.setLocation(redirectUri);
-        httpHeaders.setCacheControl(CacheControl.maxAge(60 * 60 * 1, TimeUnit.SECONDS));
+        httpHeaders.setCacheControl(CacheControl.maxAge(60 * 60 * 3, TimeUnit.SECONDS));
         return new ResponseEntity<>(httpHeaders, HttpStatus.FOUND);
     }
 }
