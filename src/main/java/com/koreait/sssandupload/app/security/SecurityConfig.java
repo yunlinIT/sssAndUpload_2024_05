@@ -1,4 +1,4 @@
-package com.koreait.sssandupload.app.base;
+package com.koreait.sssandupload.app.security;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -26,6 +26,9 @@ public class SecurityConfig {
                         formLogin -> formLogin
                                 .loginPage("/member/login") // GET
                                 .loginProcessingUrl("/member/login") // POST
+                )
+                .logout(logout -> logout
+                        .logoutUrl("/member/logout")
                 );
         return http.build();
     }
