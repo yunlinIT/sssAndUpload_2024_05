@@ -7,12 +7,13 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpSession;
 import java.security.Principal;
 
 @Controller
@@ -27,6 +28,11 @@ public class MemberController {
         return "member/join";
     }
 
+    @GetMapping("/login")
+    public String showLogin() {
+        return "member/login";
+    }
+
     @PostMapping("/join")
     public String join(HttpServletRequest req, String username, String password, String email, MultipartFile profileImg) {
         Member oldMember = memberService.getMemberByUsername(username);
@@ -35,7 +41,7 @@ public class MemberController {
         password = passwordEncoder.encode(password);
 
         if (oldMember != null) {
-            return "redirect:/?errorMsg=AlreadyExists";
+            return "redirect:/?errorMsg=Already done.";
         }
 
         Member member = memberService.join(username, password, email, profileImg);
@@ -52,7 +58,6 @@ public class MemberController {
     @PreAuthorize("isAuthenticated()")
     @GetMapping("/profile")
     public String showProfile(Principal principal, Model model) {
-
         Member loginedMember = memberService.getMemberByUsername(principal.getName());
 
         model.addAttribute("loginedMember", loginedMember);
